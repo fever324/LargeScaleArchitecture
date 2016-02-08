@@ -4,18 +4,18 @@ get - 1ms   put - 2ms
 1 billion instructions/s  
 p - percent that is put  
 
-a). Max throughput n for a single node system
-n * 0.1 * 2e-3 + n * 0.9 * 1e-3 = 1
-n = 909 requests / s
+a). Max throughput n for a single node system  
+n * 0.1 * 2e-3 + n * 0.9 * 1e-3 = 1  
+n = 909 requests / s  
 
 
-b). Max throughput n for 10 node with 10% put
-n * 10 = 9090 requests/s -> 9 million
+b). Max throughput n for 10 node with 10% put  
+n * 10 = 9090 requests/s -> 9 million  
 
-c). n * 0.2 * 2e-3 + n * 0.8 * 1e-3 = 1
-n = 8333 requests/s 
+c). n * 0.2 * 2e-3 + n * 0.8 * 1e-3 = 1  
+n = 8333 requests/s  
 
-d). (n * p * 2e-3 + n * (1-p) * 1e-3)/N = 1
+d). (n * p * 2e-3 + n * (1-p) * 1e-3)/N = 1  
 
 
 
@@ -37,7 +37,8 @@ b). Max throughput N = 10. p = 0.1
 c). The more the better  
 
 
-##3. Hybrid System. Sharding for scalability, replicated system for resiliency.    
+##3. Hybrid System.  
+**Sharding for scalability, replicated system for resiliency.**    
 
 Still using sharding but every server is backed up with one or more replicated system.   
 Break up into N clusters, each clusters has M servers.  
