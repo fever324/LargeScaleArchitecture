@@ -4,16 +4,17 @@ get - 1ms   put - 2ms
 1 billion instructions/s  
 p - percent that is put  
 
-a). Max throughput n for a single node system  
-n * 0.1 * 2e-3 + n * 0.9 * 1e-3 = 1  
+a). Max throughput n for a single node system
+n * 0.1 * 2e-3 + n * 0.9 * 1e-3 = 1
 n = 909 requests / s  
 
 
-b). Max throughput n for 10 node with 10% put  
-n * 10 = 9090 requests/s -> 9 million  
+b). Max throughput n for 10 node with 10% put
+n * 10 = 9090 requests/s
 
-c). n * 0.2 * 2e-3 + n * 0.8 * 1e-3 = 1  
-n = 8333 requests/s  
+c). 
+	n * 0.2 * 2e-3 + n * 0.8 * 1e-3 = 1
+	n = 833 requests/s  
 
 d). (n * p * 2e-3 + n * (1-p) * 1e-3)/N = 1  
 
@@ -34,7 +35,7 @@ b). Max throughput N = 10. p = 0.1
 `n * p * 2e-3 + n * (1-p) * 1e-3 / N = 1  `
 
 
-c). The more the better  
+c). max of n is 5000 where the second term goes to 0 when N goes to infinity.
 
 
 ##3. Hybrid System.  
@@ -48,7 +49,7 @@ put,get are uniformly randomly routed to one of the M servers inside the cluster
 b).
 throughput n , p = 0.1
 
-n * p * 2e-3 + n * (1-p) * 1e-3 / N^2 = 1
+`n * p * 2e-3 + n * (1-p) * 1e-3 / (N*M) = 1`
 
 
 
