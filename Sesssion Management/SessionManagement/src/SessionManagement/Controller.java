@@ -19,6 +19,7 @@ import javax.servlet.http.HttpServletResponse;
 public class Controller extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private Map<String, Session> sessionMap;
+    private ExpiredSessionRemover expiredSessionRemover;
 
     private static String COOKIE_NAME = "SESSIONCONTROLLER_HONGFEI";
 
@@ -28,6 +29,9 @@ public class Controller extends HttpServlet {
     public Controller() {
         super();
         sessionMap = new HashMap<>();
+        
+        expiredSessionRemover = new ExpiredSessionRemover(sessionMap);
+        expiredSessionRemover.run();
     }
 
     /**
@@ -45,26 +49,30 @@ public class Controller extends HttpServlet {
         if (session == null) { // session not found in cookie
             session = Session.createNewSession(ipAddress);
         } else {
-            Session serverSession = sessionMap.get(session.sessionID);
-            
-            Date currentTime = new Date();
-            if (serverSession == null || serverSession.expirationTime.before(currentTime)) {
-                session = Session.createNewSession(ipAddress);
-            } else {
-                
-                if(request.getParameter("Replace") != null) { 
-                    // update message
-                    serverSession.message = request.getParameter("input");
-                } 
-                
-                session = serverSession;
-               
-                session.version += 1;
-                session.expirationTime = Utils.getNextExpirationTime();
+             
+            synchronized(sessionMap) {
+                Session serverSession = sessionMap.get(session.sessionID);
+                Date currentTime = new Date();
+                if (serverSession == null || serverSession.expirationTime.before(currentTime)) {
+                    session = Session.createNewSession(ipAddress);
+                } else {
+                    
+                    if(request.getParameter("Replace") != null) { 
+                        // update message
+                        serverSession.message = request.getParameter("input");
+                    } 
+                    
+                    session = serverSession;
+                   
+                    session.version += 1;
+                    session.expirationTime = Utils.getNextExpirationTime();
+                }
             }
         }
-
-        sessionMap.put(session.sessionID, session);
+        
+        synchronized(sessionMap) {
+            sessionMap.put(session.sessionID, session);
+        }
 
         Cookie c = new Cookie(COOKIE_NAME, session.toString());
         response.addCookie(c);
@@ -93,10 +101,11 @@ public class Controller extends HttpServlet {
             doGet(request, response);
             
         } else if (request.getParameter("Logout") != null){
-
-            Session s = getSessionFromCookies(cookies);
-            if(s!= null) {
-                sessionMap.remove(s.sessionID);
+            synchronized(sessionMap) {
+                Session s = getSessionFromCookies(cookies);
+                if(s!= null) {
+                    sessionMap.remove(s.sessionID);
+                }
             }
             
             doGet(request,response);
@@ -118,6 +127,9 @@ public class Controller extends HttpServlet {
     }
     
     private Session getSessionFromCookies(Cookie[] cookies) {
+        if(cookies == null) {
+            return null;
+        }
         for (Cookie c : cookies) {
             if (c.getName().equals(COOKIE_NAME)) {
                 return getSessionFromCookie(c);

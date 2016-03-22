@@ -26,10 +26,7 @@ public class Session {
         Date expirationTime = Utils.getNextExpirationTime();
         
         return new Session(sessionID, version, message, expirationTime);
-    }
-
-
-  
+    }  
 
     @Override
     public int hashCode() {
