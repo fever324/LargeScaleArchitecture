@@ -74,7 +74,7 @@ public class Controller extends HttpServlet {
             sessionMap.put(session.sessionID, session);
         }
 
-        Cookie c = new Cookie(COOKIE_NAME, session.toString());
+        Cookie c = new Cookie(COOKIE_NAME, session.getCookieRepresentation());
         c.setMaxAge(180); // 3min expiration
         response.addCookie(c);
         
