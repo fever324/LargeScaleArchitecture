@@ -70,7 +70,9 @@ public class Session {
 
 
 
-
+    public String getCookieRepresentation() {
+        return sessionID + "," + version;
+    }
 
     @Override
     public String toString() {

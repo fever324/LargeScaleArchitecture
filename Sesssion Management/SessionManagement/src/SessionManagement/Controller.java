@@ -19,7 +19,6 @@ import javax.servlet.http.HttpServletResponse;
 public class Controller extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private Map<String, Session> sessionMap;
-    private ExpiredSessionRemover expiredSessionRemover;
 
     private static String COOKIE_NAME = "SESSIONCONTROLLER_HONGFEI";
 
@@ -30,8 +29,9 @@ public class Controller extends HttpServlet {
         super();
         sessionMap = new HashMap<>();
         
-        expiredSessionRemover = new ExpiredSessionRemover(sessionMap);
-        expiredSessionRemover.run();
+        Thread remover = new Thread(new ExpiredSessionRemover(sessionMap));
+        remover.start();
+
     }
 
     /**
@@ -75,6 +75,7 @@ public class Controller extends HttpServlet {
         }
 
         Cookie c = new Cookie(COOKIE_NAME, session.toString());
+        c.setMaxAge(180); // 3min expiration
         response.addCookie(c);
         
         request.setAttribute("sessionID", session.sessionID);
@@ -97,7 +98,6 @@ public class Controller extends HttpServlet {
             doGet(request, response);
             
         } else if (request.getParameter("Replace") != null) {
-
             doGet(request, response);
             
         } else if (request.getParameter("Logout") != null){
@@ -110,7 +110,6 @@ public class Controller extends HttpServlet {
             
             doGet(request,response);
         }
-        
     }
 
     private Session getSessionFromCookie(Cookie c) {
@@ -118,10 +117,8 @@ public class Controller extends HttpServlet {
 
         String sessionID        = values[0];
         int version             = Integer.parseInt(values[1]);
-        String message          = values[2];
-        Date expirationTime     = new Date(Long.parseLong(values[3]));
 
-        Session s = new Session(sessionID, version, message, expirationTime);
+        Session s = new Session(sessionID, version, "", null);
 
         return s;
     }

@@ -7,7 +7,7 @@ public class Utils {
     public static Date getNextExpirationTime() {
         Calendar cal = Calendar.getInstance(); 
         cal.setTime(new Date());
-        cal.add(Calendar.HOUR_OF_DAY, 1);
+        cal.add(Calendar.MINUTE, 3);
         return cal.getTime(); 
     }
 }
